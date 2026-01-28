@@ -58,16 +58,31 @@ int main() {
     char c;
     scanf("%c", &c);
     while (c != '\n') {
-        if (c != ' ')
+        if (c == '(' || c == '[')
             push(&s, c);
+        else if (c == ')' && !is_empty(&s)) {
+            if (peek(&s) == '(')
+                pop(&s);
+            else {
+                printf("FALSE");
+                return 0;
+            }
+        }
+        else if (c == ']' && !is_empty(&s)) {
+            if (peek(&s) == '[')
+                pop(&s);
+            else {
+                printf("FALSE");
+                return 0;
+            }
+        }
+        else {
+            printf("FALSE");
+            return 0;
+        }
         scanf("%c", &c);
     }
-    int n = s.top;
-    int i;
-    for (i = 0; i <= n/2 && (s.arr[i] == '(' && s.arr[s.top] == ')' || s.arr[i] == '[' && s.arr[s.top] == ']'); i++) {
-        pop(&s);
-    }
-    if (i == n / 2 + 1)
+    if (is_empty(&s))
         printf("TRUE");
     else
         printf("FALSE");
