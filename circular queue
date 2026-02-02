@@ -1,0 +1,56 @@
+#include <stdio.h>
+#pragma warning(disable:4996)
+#include <string.h>
+#include <stdlib.h>
+#define FULL 5
+
+typedef struct Queue {
+    int front;//맨 앞(처음)
+    int rear;//맨 뒤(나중)
+    int data[FULL];
+}Que;
+
+void init(Que* q) {
+    q->front = 0;
+    q->rear = 0;
+}
+
+int is_full(Que* q) {
+    return ((q->rear + 1) % FULL == q->front);
+    // FULL이 5면 원형 큐에 5개까지 채우는 게 불가능함 ex) rear 값 : 1 --> 2 --> 3 --> 4 --> 0 순서로 enqueue함수에서 대입이 됨
+    // 그런데 0인 경우 full인지 empty인지 구분이 불가능하기에 is_full함수에서 (q->rear +1) % FULL 로 계산을 하면 실제로 0값이 rear에 대입되기 전에
+    // is_full함수에서 다 찼다고 판단하고 멈추는 거임 == 다 채우지 못하고 한 칸을 비워둔 상태에서 정지.
+}
+
+int is_empty(Que* q) {
+    return (q->front == q->rear);
+    //empty함수는 empty 상태이려면 아예 아무런 값을 안 넣거나 무조건 같은 횟수의 enqueue, dequeue를 해야 하기 때문에 위 식을 사용함.
+}
+
+void enqueue(Que* q, int N) {
+    if (is_full(q)) {
+        printf("Queue is FULL");
+        exit(1);
+    }// FULL-1일 때 대입되기 전에 먼저 위 if문에 걸려서 꽉 찼다고 판단됨.
+    q->rear = (q->rear + 1) % FULL;
+    q->data[q->rear] = N;
+}
+
+int dequeue(Que* q) {
+    if (is_empty(q)) {
+        printf("Queue is empty");
+        exit(1);
+    }
+    q->front = (q->front + 1) % FULL;
+    return q->data[q->front];
+}
+
+int main() {
+    Que q;
+    init(&q);
+    enqueue(&q, 3);
+
+
+
+    return 0;
+}
