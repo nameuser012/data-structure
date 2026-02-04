@@ -52,3 +52,61 @@ int main() {
 
     return 0;
 }
+
+----------------------------------------------------------------------------------------------------------// Queue code without exit function
+#include <stdio.h>
+#pragma warning(disable:4996)
+#include <string.h>
+#include <stdlib.h>
+#define FULL 5
+
+typedef struct Queue {
+    int front;//맨 앞(처음)
+    int rear;//맨 뒤(나중)
+    int data[FULL];
+}Que;
+
+void init(Que* q) {
+    q->front = -1;
+    q->rear = -1;
+}
+
+int is_full(Que* q) {
+    if (q->rear == FULL - 1)
+        return 1;
+    return 0;
+}
+
+int is_empty(Que* q) {
+    if (q->front == q->rear)
+        return 1;
+    return 0;
+}
+
+int enqueue(Que* q, int N) {
+    if (is_full(q)) {
+        printf("Queue is FULL");
+        return 0;
+    }
+    q->data[++(q->rear)] = N;
+    return 1;
+}
+
+int dequeue(Que* q, int *out) {
+    if (is_empty(q)) {
+        printf("Queue is empty");
+        return 0;
+    }
+    *out = q->data[++(q->front)];
+    return 1;
+}
+
+int main() {
+    Que q;
+    init(&q);
+    enqueue(&q, 3);
+
+
+
+    return 0;
+}
