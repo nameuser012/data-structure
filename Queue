@@ -110,3 +110,66 @@ int main() {
 
     return 0;
 }
+
+--------------------------------------------------------------------------------------------------------------------------------------with malloc
+#include <stdio.h>
+#pragma warning(disable:4996)
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct Queue {
+    int front;
+    int rear;
+    int *data;
+    int capacity;
+}Que;
+
+int init(Que* q, int N) {
+    q->capacity = N;
+    q->front = -1;
+    q->rear = -1;
+    q->data = (int*)malloc(N * sizeof(int));
+    if (q->data == NULL)
+        return -1;
+    return 0;
+}
+
+int is_empty(Que* q) {
+    if (q->front == q->rear)
+        return 1;
+    return 0;
+}
+
+int is_full(Que* q) {
+    if (q->rear == q->capacity -1 )
+        return 1;
+    return 0;
+}
+
+int enqueue(Que* q, int N) {
+    if (is_full(q))
+        return 0;
+    q->data[++(q->rear)] = N;
+    return 1;
+}
+
+int dequeue(Que* q) {
+    if (is_empty(q))
+        return 0;
+    return q->data[++(q->front)];
+}
+
+int peek(Que* q) {
+    if (is_empty(q))
+        return 0;
+    return q->data[q->front+1];
+}
+
+void destroy(Que* q) {
+    free(q);
+    q->data = NULL;
+}
+
+int main() {
+    return 0;
+}
