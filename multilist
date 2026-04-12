@@ -1,0 +1,121 @@
+#include <stdio.h>
+#pragma warning(disable:4996)
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct node {
+	char group;
+	char elements[2];
+	struct node* nextg;
+	struct node *nexte;
+}NODE;
+
+typedef struct group {
+	char group;
+	NODE *HEAD;
+}GROUP;
+
+typedef struct element {
+	char element[2];
+	NODE *HEAD;
+}ELEMENT;
+
+void setg(GROUP list[], int size);
+void sete(ELEMENT list[], int szie);
+void freenodeE(NODE** list);
+void add(GROUP listg[], ELEMENT liste[], char g, char e[]);
+// remove함수는 그냥 group이랑 element쪽에서 값 같은 거 차례대로 찾아서 따로 주소 복사해두고 그 다음꺼에 연결시킨 다음 연결 끊고 가장 마지막에 동적할당 해제시키면 끝
+
+int main() {
+	GROUP group[3];
+	ELEMENT element[4];
+	setg(group, 3);
+	sete(element, 4);
+	char G, E[2];
+	scanf("%c %s", &G, E);
+	
+	add(group, element, G, E);
+
+	printf("%c %c", group[2].HEAD->nextg->group, element[2].HEAD->nexte->group);
+	for (int i = 0; i < 3; i++) {
+		freenodeE(&group[i].HEAD);
+	}
+	for (int i = 0; i < 4; i++) {
+		free(element[i].HEAD);
+	}
+
+}
+
+void setg(GROUP list[], int size) {
+	for (int i = 0; i < size; i++) {
+		list[i].group = 'A' + i;
+		list[i].HEAD = (NODE*)malloc(sizeof(NODE));
+		list[i].HEAD->nextg = NULL;
+	}
+}
+
+void sete(ELEMENT list[], int size) {
+	int num = 0;
+	for (int i = 0;i < size; i++) {
+		if (i % 3 == 0)
+			list[i].element[0] = 'x';
+		else if (i % 3 == 1)
+			list[i].element[0] = 'y';
+		else if (i % 3 == 2)
+			list[i].element[0] = 'z';
+		num = i / 3;
+		list[i].element[1] = '1'+num;
+		list[i].HEAD = (NODE*)malloc(sizeof(NODE));
+		list[i].HEAD->nexte = NULL;
+	}
+}
+
+void freenodeE(NODE** list) {
+	NODE *node = *list;
+	NODE* tmp=NULL;
+	while (node != NULL) {
+		tmp = node;
+		node = node->nexte;
+		free(tmp);
+	}
+}
+
+void add(GROUP listg[], ELEMENT liste[], char g, char e[]) {
+	NODE* temp;
+	NODE* new = (NODE*)malloc(sizeof(NODE));
+	new->group = g;
+	new->elements[0] = e[0];
+	new->elements[1] = e[1];
+	int i = 0;
+	while (listg[i].group != g) {
+		i++;
+	}
+	new->nextg = listg[i].HEAD;
+
+	temp = listg[i].HEAD;
+	while (temp->nextg != NULL && temp->nextg != listg[i].HEAD && strcmp(temp->nextg->elements, e) > 0 ) {
+		temp = temp->nextg;
+	}
+	if (temp->nextg != NULL || temp->nextg != listg[i].HEAD)
+		temp->nextg = new;
+	else {
+		new->nextg = temp->nextg;
+		temp->nextg = new;
+	}
+
+
+	int j = 0;
+	while (liste[j].element[0] != e[0] || liste[j].element[1] != e[1])
+		j++;
+	new->nexte = liste[j].HEAD;
+
+	temp = liste[j].HEAD;
+	while (temp->nexte != NULL && temp->nexte != liste[j].HEAD && temp->nexte->group < g)
+		temp = temp->nexte;
+	if (temp->nexte == NULL || temp->nexte != liste[j].HEAD)
+		temp->nexte = new;
+	else {
+		new->nexte = temp->nexte;
+		temp->nexte = new;
+	}
+}
